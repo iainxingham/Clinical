@@ -10,9 +10,14 @@ public:
     DBObj();
     ~DBObj();
 
+    // Various direct database access / setup functions
     bool db_init(QString driver="QSQLITE");
     void db_setpath(QString path);
     int db_getpatid(QString rxr, QString nhs="NULL");
+
+    // Validate data for database
+    bool valid_rxr(QString rxr);
+    bool valid_nhs(QString nhs);
 
 private:
     QSqlDatabase db;

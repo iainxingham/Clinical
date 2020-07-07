@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QSqlQuery>
 #include <QVariant>
+#include <QRegularExpression>
 
 DBObj::DBObj()
 {
@@ -60,13 +61,13 @@ int DBObj::db_getpatid(QString rxr, QString nhs)
     QSqlQuery q1, q2;
 
     q1.prepare("SELECT id, nhs FROM pats WHERE rxr = ?");
-    q1.addBindValue(rxr.toUpper());
+    q1.addBindValue(rxr.trimmed().toUpper());
     q1.exec();
 
     if(q1.first()) {
         if((nhs != "NULL") && (q1.value(1).toString() == "NULL")) {
             q2.prepare("UPDATE pats SET nhs = ? WHERE id = ?");
-            q2.addBindValue(nhs);
+            q2.addBindValue(nhs.trimmed());
             q2.addBindValue(q1.value(0).toInt());
             q2.exec();
         }
@@ -74,12 +75,34 @@ int DBObj::db_getpatid(QString rxr, QString nhs)
     }
 
     q2.prepare("INSERT INTO pats (rxr, nhs) VALUES (?, ?)");
-    q2.addBindValue(rxr.toUpper());
-    q2.addBindValue(nhs);
+    q2.addBindValue(rxr.trimmed().toUpper());
+    q2.addBindValue(nhs.trimmed());
     q2.exec();
 
     q1.exec();
     if(q1.first()) return q1.value(0).toInt();
 
     return -1;
+}
+
+bool DBObj::valid_rxr(QString rxr)
+{
+    QRegularExpression re("\\d{7}");
+
+    rxr = rxr.trimmed();
+
+    if(rxr.length() != 10) return false;
+    if(!rxr.startsWith("rxr", Qt::CaseInsensitive)) return false;
+    if(re.match(rxr.right(7)).hasMatch()) return true;
+
+    return false;
+}
+
+bool DBObj::valid_nhs(QString nhs)
+{
+    QRegularExpression re("\\d{3}\\s*\\d{3}\\s*\\d{4}");
+
+    if(re.match(nhs.trimmed()).hasMatch()) return true;
+
+    return false;
 }
