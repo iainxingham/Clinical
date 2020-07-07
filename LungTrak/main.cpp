@@ -1,6 +1,11 @@
+#define MAIN_CPP
+
 #include "mainwindow.h"
+#include "dbobj.h"
 
 #include <QApplication>
+
+DBObj *ClinicalDB;
 
 int main(int argc, char *argv[])
 {

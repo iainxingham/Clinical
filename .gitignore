@@ -1,3 +1,6 @@
+# Database files
+*.sqlite
+
 # C++ objects and libs
 *.slo
 *.lo
