@@ -60,14 +60,20 @@ int DBObj::db_getpatid(QString rxr, QString nhs)
 {
     QSqlQuery q1, q2;
 
+    if (!valid_rxr(rxr)) return -1;
+    else rxr = clean_rxr(rxr);
+
+    if (!valid_nhs(nhs)) nhs = "NULL";
+    else nhs = clean_nhs(nhs);
+
     q1.prepare("SELECT id, nhs FROM pats WHERE rxr = ?");
-    q1.addBindValue(rxr.trimmed().toUpper());
+    q1.addBindValue(rxr);
     q1.exec();
 
     if(q1.first()) {
         if((nhs != "NULL") && (q1.value(1).toString() == "NULL")) {
             q2.prepare("UPDATE pats SET nhs = ? WHERE id = ?");
-            q2.addBindValue(nhs.trimmed());
+            q2.addBindValue(nhs);
             q2.addBindValue(q1.value(0).toInt());
             q2.exec();
         }
@@ -75,8 +81,8 @@ int DBObj::db_getpatid(QString rxr, QString nhs)
     }
 
     q2.prepare("INSERT INTO pats (rxr, nhs) VALUES (?, ?)");
-    q2.addBindValue(rxr.trimmed().toUpper());
-    q2.addBindValue(nhs.trimmed());
+    q2.addBindValue(rxr);
+    q2.addBindValue(nhs);
     q2.exec();
 
     q1.exec();
@@ -100,9 +106,27 @@ bool DBObj::valid_rxr(QString rxr)
 
 bool DBObj::valid_nhs(QString nhs)
 {
-    QRegularExpression re("\\d{3}\\s*\\d{3}\\s*\\d{4}");
+    QRegularExpression re("^\\d{3}\\s*\\d{3}\\s*\\d{4}$");
 
     if(re.match(nhs.trimmed()).hasMatch()) return true;
 
     return false;
+}
+
+QString DBObj::clean_rxr(QString rxr)
+{
+    return rxr.trimmed().toUpper();
+}
+
+QString DBObj::clean_nhs(QString nhs)
+{
+    QRegularExpression re("(\\d{3})\\s*(\\d{3})\\s*(\\d{4})");
+    QRegularExpressionMatch match;
+
+    match = re.match(nhs.trimmed());
+    if(match.hasMatch()) {
+        return (match.captured(1) + " " + match.captured(2) + " " + match.captured(3));
+    }
+
+    return "NULL";
 }
