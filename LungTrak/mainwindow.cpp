@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "dbobj.h"
 
+#include <QMessageBox>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -30,9 +32,18 @@ void MainWindow::on_add_pat_Button_clicked()
 
     rxr = ui->rxrEdit->text();
     nhs = ui->nhsEdit->text();
-    ClinicalDB->db_getpatid(rxr, nhs);
 
-    ui->rxrEdit->clear();
-    ui->nhsEdit->clear();
-    model_pats.setQuery(model_pats_query);
+    if(ClinicalDB->db_getpatid(rxr, nhs) < 0) {
+        QMessageBox msg;
+
+        msg.setWindowTitle("RXR not valid");
+        msg.setText("The is a problem with the supplied RXR number.\nNothing has been added to the database.");
+        msg.setIcon(QMessageBox::Warning);
+        msg.exec();
+    }
+    else {
+        ui->rxrEdit->clear();
+        ui->nhsEdit->clear();
+        model_pats.setQuery(model_pats_query);
+    }
 }
