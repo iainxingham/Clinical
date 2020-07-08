@@ -113,7 +113,7 @@ bool DBObj::valid_rxr(QString rxr)
 
 bool DBObj::valid_nhs(QString nhs)
 {
-    QRegularExpression re("\\d{3}\\s*\\d{3}\\s*\\d{4}");
+    QRegularExpression re("^\\d{3}\\s*\\d{3}\\s*\\d{4}$");
 
     if(re.match(nhs.trimmed()).hasMatch()) return true;
 
