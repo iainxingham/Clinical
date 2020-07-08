@@ -24,6 +24,7 @@ private:
     QString db_path;
 
     QString clean_rxr(QString rxr);
+
 #ifdef TESTING
 // Expose clean_nhs() for testing
 public:
