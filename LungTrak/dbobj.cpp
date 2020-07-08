@@ -66,13 +66,6 @@ int DBObj::db_getpatid(QString rxr, QString nhs)
     if (!valid_nhs(nhs)) nhs = "NULL";
     else nhs = clean_nhs(nhs);
 
-    //debug
-    QMessageBox msg;
-    msg.setWindowTitle("NHS");
-    msg.setText(nhs);
-    msg.setIcon(QMessageBox::Information);
-    msg.exec();
-
     q1.prepare("SELECT id, nhs FROM pats WHERE rxr = ?");
     q1.addBindValue(rxr);
     q1.exec();
@@ -113,7 +106,7 @@ bool DBObj::valid_rxr(QString rxr)
 
 bool DBObj::valid_nhs(QString nhs)
 {
-    QRegularExpression re("\\d{3}\\s*\\d{3}\\s*\\d{4}");
+    QRegularExpression re("^\\d{3}\\s*\\d{3}\\s*\\d{4}$");
 
     if(re.match(nhs.trimmed()).hasMatch()) return true;
 

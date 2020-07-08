@@ -1,6 +1,9 @@
 # Database files
 *.sqlite
 
+# Test files
+Tests/BasicTests/BasicTests
+
 # C++ objects and libs
 *.slo
 *.lo
